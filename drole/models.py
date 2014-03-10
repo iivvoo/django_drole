@@ -78,14 +78,3 @@ class RolePermission(models.Model):
     def __unicode__(self):
         return u"<Permission {0} for role {1}>".format(self.permission,
                                                       self.role)
-"""
-def do_generic_stuff(func, obj):
-    from django.contrib.contenttypes.models import ContentType
-    content_type = ContentType.objects.get_for_model(obj.__class__)
-    object_id = getattr(obj, obj.__class__._meta.pk.column)
-    return func(content_type=content_type, object_id=object_id)
-
-from django.contrib.contenttypes.models import ContentType
-type = ContentType.objects.get_for_model(object)
-vote, created = Vote.objects.get_or_create(user_voted=user_voted, content_type=type, object_id=object.id)
-"""
