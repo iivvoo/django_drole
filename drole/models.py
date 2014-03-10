@@ -36,7 +36,9 @@ class Base(object):
 class Permission(Base):
     _registry = {}
 
-        
+    def __unicode__(self):
+        return u"<Permission {0} ({1})>".format(self.id, self.name)
+
 class Role(Base):
     _registry = {}
 
@@ -47,6 +49,8 @@ class Role(Base):
                                              role=self.id,
                                              permission=permission.id).exists()
 
+    def __unicode__(self):
+        return u"<Role {0} ({1})>".format(self.id, self.name)
 
 class RolePermission(models.Model):
     permission = models.CharField(max_length=255, blank=False, db_index=True)

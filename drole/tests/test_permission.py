@@ -11,6 +11,9 @@ class TestPermission(object):
         Permission is a simple wrapper around a string identifier
         with some singleton-ish behaviour
     """
+    def test_unicode(self):
+        assert isinstance(Permission.create("foo").__unicode__(), unicode)
+
     def test_create(self):
         """ Permissions are implicitly created """
         assert Permission.create("foo") is not None

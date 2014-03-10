@@ -23,6 +23,13 @@ def view_permission():
     return Permission("test.view", "View Permission")
 
 class TestAuthentication(object):
+    def test_unicode(self, client, role, permission):
+        obj = TestModel.objects.get_or_create(name="bla")[0]
+        assert isinstance(RolePermission.assign(obj,
+                                                role,
+                                                permission).__unicode__(),
+                          unicode)
+
     def test_empty(self, client, role, permission):
         """ no assignments at all """
         obj = TestModel.objects.get_or_create(name="bla")[0]

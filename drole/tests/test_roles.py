@@ -11,6 +11,9 @@ class TestRole(object):
         Role is a simple wrapper around a string identifier
         with some singleton-ish behaviour
     """
+    def test_unicode(self):
+        assert isinstance(Role.create("foo").__unicode__(), unicode)
+
     def test_create(self):
         """ Role are implicitly created """
         assert Role.create("foo") is not None
