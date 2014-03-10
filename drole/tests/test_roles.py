@@ -1,4 +1,4 @@
-from drole.models import Role
+from drole.models import Role, _Role
 
 class TestRole(object):
     """
@@ -25,3 +25,26 @@ class TestRole(object):
         """
         assert Role("foo") != Role("bar")
 
+    def test_equality(self):
+        """ ordinary comparison. Will succeed since it will be the same
+            objects """
+        assert Role("foo") == Role("foo")
+
+    def test_forced_equality(self):
+        """ if somehow different roles get created with the same identifier,
+            they should still be equal """
+        assert _Role("foo") == _Role("foo")
+
+    def test_forced_inequality(self):
+        """ if somehow different roles get created with different identifiers,
+            they should not be equal """
+        assert _Role("foo") != _Role("bar")
+
+    def test_forced_identity(self):
+        """ if somehow different roles get created with the same identifier,
+            they are equal but not identical """
+        assert _Role("foo") is not _Role("foo")
+
+    def test_in(self):
+        """ a common case """
+        assert Role("foo") in [Role("bar"), Role("foo"), Role("hello")]

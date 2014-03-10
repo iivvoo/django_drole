@@ -1,4 +1,4 @@
-from drole.models import Permission
+from drole.models import Permission, _Permission
 
 class TestPermission(object):
     """
@@ -25,3 +25,27 @@ class TestPermission(object):
         """
         assert Permission("foo") != Permission("bar")
 
+    def test_equality(self):
+        """ ordinary comparison. Will succeed since it will be the same
+            objects """
+        assert Permission("foo") == Permission("foo")
+
+    def test_forced_equality(self):
+        """ if somehow different permissions get created with the same
+            identifier, they should still be equal """
+        assert _Permission("foo") == _Permission("foo")
+
+    def test_forced_inequality(self):
+        """ if somehow different permissions get created with different
+            identifiers, they shouldn't be equal """
+        assert _Permission("foo") != _Permission("bar")
+
+    def test_forced_identity(self):
+        """ if somehow different permissions get created with the same
+            identifier, they are equal but not identical """
+        assert _Permission("foo") is not _Permission("foo")
+
+    def test_in(self):
+        """ a common case """
+        assert Permission("foo") in [Permission("bar"),
+                                     Permission("foo"), Permission("hello")]

@@ -2,40 +2,43 @@ from django.db import models
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
 
-class _Permission(object):
-    _perms = {}
+class Base(object):
+    """
+        A singletonish (based on id) type with additional
+        equality functionality
+    """
+    _registry = None  ## should be overridden, don't share through base
 
     def __init__(self, id, name="", description=""):
         self.id = id
         self.name = name or id
         self.description = description
 
+    def __eq__(self, other):
+        return other and self.__class__ is other.__class__ and \
+               self.id == other.id
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
     @classmethod
-    def create(cls, id, name, description):
-        p = cls._perms.get(id)
+    def create(cls, id, name="", description=""):
+        p = cls._registry.get(id)
         if not p:
-            p = _Permission(id, name, description)
-            cls._perms[id] = p
+            p = cls(id, name, description)
+            cls._registry[id] = p
         return p
+
+class _Permission(Base):
+    _registry = {}
+
         
 def Permission(id, name="", description=""):
     return _Permission.create(id, name, description)
 
-class _Role(object):
-    _roles = {}
-
-    def __init__(self, id, name="", description=""):
-        self.id = id
-        self.name = name or id
-        self.description = description
-
-    @classmethod
-    def create(cls, id, name, description):
-        p = cls._roles.get(id)
-        if not p:
-            p = _Role(id, name, description)
-            cls._roles[id] = p
-        return p
+class _Role(Base):
+    _registry = {}
+        
 
     def has_access(self, obj, permission):
         model_ct = ContentType.objects.get_for_model(obj)
@@ -43,7 +46,8 @@ class _Role(object):
                                              object_id=obj.id,
                                              role=self.id,
                                              permission=permission.id).exists()
-        
+
+
 def Role(id, name="", description=""):
     return _Role.create(id, name, description)
 
