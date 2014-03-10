@@ -8,19 +8,19 @@ from drole.test_models import TestModel
 
 @pytest.fixture()
 def role():
-    return Role.objects.get_or_create(name="A role")[0]
+    return Role("test.arole", "A role")
 
 @pytest.fixture()
 def anonymous_role():
-    return Role.objects.get_or_create(name="Anonymous")[0]
+    return Role("test.anonymous", "Anonymous")
 
 @pytest.fixture()
 def permission():
-    return Permission.objects.get_or_create(name="A permission")[0]
+    return Permission("test.permission", "Test Permission")
 
 @pytest.fixture()
 def view_permission():
-    return Permission.objects.get_or_create(name="View")[0]
+    return Permission("test.view", "View Permission")
 
 class TestAuthentication(object):
     def test_empty(self, client, role, permission):
