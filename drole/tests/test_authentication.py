@@ -69,3 +69,16 @@ class TestAuthentication(object):
 
         RolePermission.assign(obj, anonymous_role, view_permission)
         assert anonymous_role.has_access(obj, view_permission)
+
+    def test_assignments_empty(self, client):
+        """ by default no assignments """
+        obj = TestModel.objects.get_or_create(name="bla")[0]
+
+        assert not RolePermission.assignments(obj).exists()
+
+    def test_assignments(self, client, anonymous_role, view_permission):
+        """ simple success case: role/perm assignment """
+        obj = TestModel.objects.get_or_create(name="bla")[0]
+
+        RolePermission.assign(obj, anonymous_role, view_permission)
+        assert RolePermission.assignments(obj).exists()

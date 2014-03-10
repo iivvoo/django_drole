@@ -29,16 +29,16 @@ class Base(object):
             cls._registry[id] = p
         return p
 
-class _Permission(Base):
+    @classmethod
+    def all(cls):
+        return cls._registry.values()
+
+class Permission(Base):
     _registry = {}
 
         
-def Permission(id, name="", description=""):
-    return _Permission.create(id, name, description)
-
-class _Role(Base):
+class Role(Base):
     _registry = {}
-        
 
     def has_access(self, obj, permission):
         model_ct = ContentType.objects.get_for_model(obj)
@@ -46,10 +46,6 @@ class _Role(Base):
                                              object_id=obj.id,
                                              role=self.id,
                                              permission=permission.id).exists()
-
-
-def Role(id, name="", description=""):
-    return _Role.create(id, name, description)
 
 
 class RolePermission(models.Model):
