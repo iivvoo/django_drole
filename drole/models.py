@@ -68,6 +68,13 @@ class RolePermission(models.Model):
         r.save()
         return r
 
+    @classmethod
+    def assignments(cls, obj):  # XXX make this a manager?
+        """ return all assignments for a specific object """
+        model_ct = ContentType.objects.get_for_model(obj)
+        return cls.objects.filter(content_type=model_ct, object_id=obj.id).all()
+
+
     def __unicode__(self):
         return u"<Permission {0} for role {1}>".format(self.permission,
                                                       self.role)
