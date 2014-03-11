@@ -1,5 +1,5 @@
 import pytest
-from drole.models import Permission, Role
+from drole.types import Permission, Role
 
 @pytest.fixture
 def clean_registry():

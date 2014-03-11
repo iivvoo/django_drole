@@ -1,9 +1,9 @@
 import pytest
 
 from twotest.fixtures import client, django_client
-from django.contrib.auth.models import User
 
-from drole.models import Role, Permission, RolePermission
+from drole.types import Role, Permission
+from drole.models import RolePermission
 from drole.test_models import TestModel
 
 @pytest.fixture()
