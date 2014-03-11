@@ -41,6 +41,8 @@ class Permission(Base):
     def __unicode__(self):
         return u"<Permission {0} ({1})>".format(self.id, self.name)
 
+    __repr__ = __unicode__
+
 class Role(Base):
     _registry = {}
 
@@ -54,3 +56,5 @@ class Role(Base):
 
     def __unicode__(self):
         return u"<Role {0} ({1})>".format(self.id, self.name)
+
+    __repr__ = __unicode__
