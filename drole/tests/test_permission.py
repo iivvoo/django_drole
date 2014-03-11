@@ -1,5 +1,5 @@
 import pytest
-from drole.models import Permission
+from drole.models import Permission, Role
 
 @pytest.fixture
 def clean_registry():
@@ -68,4 +68,12 @@ class TestPermission(object):
         p1 = Permission.create("r1")
         p2 = Permission.create("r2")
         p3 = Permission.create("r2") # duplicate!
-        assert set(Permission.all()) == set((p1, p2))                                     
+        assert set(Permission.all()) == set((p1, p2))
+
+    def test_hash(self):
+        """ verify permissions can be hashed properly """
+        assert set((Permission("r1"),)) == set((Permission("r1"),))
+
+    def test_hash_perm_role(self):
+        """ Permission / Role are hashed differently, even with same id """
+        assert set((Permission("r1"),)) != set((Role("r1"),))

@@ -68,3 +68,8 @@ class TestRole(object):
         r2 = Role.create("r2")
         r3 = Role.create("r2") # duplicate!
         assert set(Role.all()) == set((r1, r2))
+
+    def test_hash(self):
+        """ verify roles can be hashed properly """
+        assert set((Role("r1"),)) == set((Role("r1"),))
+

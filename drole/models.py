@@ -21,6 +21,9 @@ class Base(object):
     def __ne__(self, other):
         return not self.__eq__(other)
 
+    def __hash__(self):
+        return hash(self.id)
+
     @classmethod
     def create(cls, id, name="", description=""):
         p = cls._registry.get(id)
@@ -46,15 +49,57 @@ class Role(Base):
         model_ct = ContentType.objects.get_for_model(obj)
         return RolePermission.objects.filter(content_type=model_ct,
                                              object_id=obj.id,
-                                             role=self.id,
-                                             permission=permission.id).exists()
+                                             role=self,
+                                             permission=permission).exists()
 
     def __unicode__(self):
         return u"<Role {0} ({1})>".format(self.id, self.name)
 
+class RoleField(models.CharField):
+
+    __metaclass__ = models.SubfieldBase
+
+    def to_python(self, value):
+        if value is None:
+            return None
+
+        if isinstance(value, (str, unicode)):
+            return Role(value)
+
+        return value
+
+    def get_prep_value(self, value):
+        if isinstance(value, Role):
+            return value.id
+        return value
+
+    def xget_db_prep_save(self, value, connection):
+        return super(RoleField, self).get_db_prep_save(value.id, connection)
+
+class PermissionField(models.CharField):
+
+    __metaclass__ = models.SubfieldBase
+
+    def to_python(self, value):
+        if value is None:
+            return None
+
+        if isinstance(value, (str, unicode)):
+            return Permission(value)
+
+        return value
+
+    def get_prep_value(self, value):
+        if isinstance(value, Permission):
+            return value.id
+        return value
+
+    def xget_db_prep_save(self, value, connection):
+        return super(PermissionField, self).get_db_prep_save(value.id, connection)
+
 class RolePermission(models.Model):
-    permission = models.CharField(max_length=255, blank=False, db_index=True)
-    role = models.CharField(max_length=255, blank=False, db_index=True)
+    permission = PermissionField(max_length=255, blank=False, db_index=True)
+    role = RoleField(max_length=255, blank=False, db_index=True)
 
     content_type = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField(db_index=True)
@@ -65,8 +110,8 @@ class RolePermission(models.Model):
         model_ct = ContentType.objects.get_for_model(obj)
         r, _ = cls.objects.get_or_create(content_type=model_ct,
                                          object_id=obj.id,
-                                         permission=permission.id,
-                                         role=role.id)
+                                         permission=permission,
+                                         role=role)
         return r
 
     @classmethod
