@@ -62,10 +62,11 @@ class RolePermission(models.Model):
 
     @classmethod
     def assign(cls, obj, role, permission):
-        r = cls(content_object=obj,
-                permission=permission.id,
-                role=role.id)
-        r.save()
+        model_ct = ContentType.objects.get_for_model(obj)
+        r, _ = cls.objects.get_or_create(content_type=model_ct,
+                                         object_id=obj.id,
+                                         permission=permission.id,
+                                         role=role.id)
         return r
 
     @classmethod

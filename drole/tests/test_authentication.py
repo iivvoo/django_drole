@@ -89,3 +89,11 @@ class TestAuthentication(object):
 
         RolePermission.assign(obj, anonymous_role, view_permission)
         assert RolePermission.assignments(obj).exists()
+
+    def test_assignments_dup(self, client, anonymous_role, view_permission):
+        """ a duplicate assignment should not create duplicate records """
+        obj = TestModel.objects.get_or_create(name="bla")[0]
+
+        RolePermission.assign(obj, anonymous_role, view_permission)
+        RolePermission.assign(obj, anonymous_role, view_permission)
+        assert RolePermission.assignments(obj).count() == 1
