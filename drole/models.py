@@ -13,6 +13,13 @@ class RolePermission(models.Model):
     content_object = generic.GenericForeignKey('content_type', 'object_id')
 
     @classmethod
+    def clear(cls, obj, permission):
+        """ clear all role assignments for permission on instance """
+        model_ct = ContentType.objects.get_for_model(obj)
+        cls.objects.filter(content_type=model_ct, object_id=obj.id,
+                           permission=permission).delete()
+
+    @classmethod
     def assign(cls, obj, role, permission):
         model_ct = ContentType.objects.get_for_model(obj)
         r, _ = cls.objects.get_or_create(content_type=model_ct,

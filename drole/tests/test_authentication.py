@@ -97,3 +97,38 @@ class TestAuthentication(object):
         RolePermission.assign(obj, anonymous_role, view_permission)
         RolePermission.assign(obj, anonymous_role, view_permission)
         assert RolePermission.assignments(obj).count() == 1
+
+    def test_clear_noeffect(self, client, anonymous_role):
+        """ clear a permission that has no assignment """
+        obj = TestModel.objects.get_or_create(name="bla")[0]
+
+        RolePermission.assign(obj, anonymous_role, Permission("one"))
+
+        RolePermission.clear(obj, Permission("other"))
+        assert RolePermission.assignments(obj).count() == 1
+
+    def test_clear(self, client, anonymous_role):
+        """ clear a permission that has an assignment """
+        obj = TestModel.objects.get_or_create(name="bla")[0]
+
+        RolePermission.assign(obj, anonymous_role, Permission("one"))
+
+        RolePermission.clear(obj, Permission("one"))
+        assert RolePermission.assignments(obj).count() == 0
+
+    def test_clear_complex(self, client):
+        """ clear a permission that has an multiple assignments """
+        obj = TestModel.objects.get_or_create(name="bla")[0]
+
+        RolePermission.assign(obj, Role("r1"), Permission("one"))
+        RolePermission.assign(obj, Role("r2"), Permission("one"))
+        RolePermission.assign(obj, Role("r1"), Permission("two"))
+        RolePermission.assign(obj, Role("r2"), Permission("two"))
+
+        RolePermission.clear(obj, Permission("one"))
+        a =  RolePermission.assignments(obj)
+
+        assert a.count() == 2
+        assert set(e.role for e in a.all()) == set((Role("r1"), Role("r2")))
+        assert set(e.permission for e in a.all()) == set((Permission("two"),))
+
